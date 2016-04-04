@@ -18,7 +18,7 @@ import simplefetch, logging
 logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
                     format='%(asctime)s [%(name)s] %(levelname)s (%(threadName)-10s): %(message)s')
 					
-test_router = customnetworklib.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
+test_router = simplefetch.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
 print test_router.fetchData("show version")
 test_router.disconnect()
  
