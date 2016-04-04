@@ -13,7 +13,7 @@ Script is based on paramiko and catches device-prompt to understand the output i
 
 ------Simple Example------
 
-import customnetworklib, logging
+import simplefetch, logging
 
 logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
                     format='%(asctime)s [%(name)s] %(levelname)s (%(threadName)-10s): %(message)s')
