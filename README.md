@@ -1,7 +1,7 @@
 # simplefetch
 Simplified Paramiko Library to Fetch Data From MultiVendor Network Devices
 
-------Supports------
+# Supports
 
 Cisco IOS
 Cisco IOS-XE
@@ -11,8 +11,16 @@ Juniper Junos
 
 Script is based on paramiko and catches device-prompt to understand the output is fetched, thus there is a strong possibility that script could work with many network devices from different vendors, i  only do not have the chance to test.
 
-------Simple Example------
+# Accepted Network Device OS Types
+* huawei-vrp6
+* cisco-ios
+* cisco-iosxe
+* cisco-iosxr
+* cisco-nxos
+* junos
 
+# Simple Example
+```
 import simplefetch, logging
 
 logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
@@ -21,11 +29,4 @@ logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
 test_router = simplefetch.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
 print test_router.fetchData("show version")
 test_router.disconnect()
- 
-------Accepted Network Device OS Types------
-huawei-vrp6
-cisco-ios
-cisco-iosxe
-cisco-iosxr
-cisco-nxos
-junos
+```
