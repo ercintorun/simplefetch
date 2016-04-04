@@ -89,7 +89,13 @@ class SSH:
 						raise ValueError("40 seconds timeout after sending command '"+str(cmd)+"' to %s" % self.host)
 						return
 				logging.info("["+self.host+"] > All initial commands ran.")
-				return str(buff).split(self.prompt)[0].split(cmd)[-1]
+				"""take the portion of the output after send command before host name"""
+				pattern = re.compile(r"("+cmd+")(.*)("+self.prompt+")", re.DOTALL)
+				output = re.search(pattern, str(buff)).group(2)
+				"""huawei has < before the host name so it should be removed"""
+				if output[-1:] in ["<","["]:
+					output = output[:-1]
+				return output
 			else:
 				logging.warning("device software type '%s' is unkown" % os)
 				raise ValueError("device software type '%s' is unkown" % os)
