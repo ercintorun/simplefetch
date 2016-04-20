@@ -21,6 +21,16 @@ Script is based on paramiko and catches device-prompt to understand the output i
 
 # Simple Example
 ```
+import simplefetch
+
+test_router = simplefetch.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
+print test_router.fetchData("show version")
+test_router.disconnect()
+```
+
+# Example with Logging
+
+```
 import simplefetch, logging
 
 logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
