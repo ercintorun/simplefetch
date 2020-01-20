@@ -13,7 +13,7 @@ Simplified Paramiko Library to Fetch Data From MultiVendor Network Devices
 Script is based on paramiko and catches device-prompt to understand the output is fetched, thus there is a strong possibility that script could work with many network devices from different vendors, i  only do not have the chance to test.
 
 # Accepted Network Device OS Types
-* huawei-vrp6
+* huawei-vrp
 * cisco-ios
 * cisco-iosxe
 * cisco-iosxr
