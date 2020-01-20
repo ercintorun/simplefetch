@@ -110,7 +110,7 @@ class SSH:
 			
 			if self.os in ("cisco-ios" ,"cisco-nxos","cisco-iosxe","cisco-iosxr"):
 				send_command_and_get_response(self.chan,ios_any_cli_length, self.prompt)
-			elif self.os=="huawei-vrp6":
+			elif self.os=="huawei-vrp":
 				send_command_and_get_response(self.chan,vrp_cli_length, self.prompt)
 			elif self.os=="junos":
 				send_command_and_get_response(self.chan,junos_cli_length, self.prompt)
