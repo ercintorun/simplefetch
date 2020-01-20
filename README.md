@@ -19,24 +19,25 @@ Script is based on paramiko and catches device-prompt to understand the output i
 * cisco-nxos
 * junos
 
+For the above device type pagination commands (e.g. "terminal length 0") send automatically. 
+
 # Simple Example
 ```
 import simplefetch
 
 test_router = simplefetch.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
-print test_router.fetchData("show version")
+print test_router.fetchdata("show version")
 test_router.disconnect()
 ```
 
 # Example with Logging
 
 ```
-import simplefetch, logging
-
-logging.basicConfig(filename='warning.log', filemode='a', level=logging.WARNING,
+import simplefetch,logging
+logging.basicConfig(filename='info.log', filemode='a', level=logging.INFO,
                     format='%(asctime)s [%(name)s] %(levelname)s (%(threadName)-10s): %(message)s')
 					
-test_router = simplefetch.SSH("192.168.1.0", 22, "admin", "secret", "cisco-ios")
-print test_router.fetchData("show version")
-test_router.disconnect()
+test_router = simplefetch.SSH( "admin", "secret","192.168.1.0", 22, "cisco-ios")
+print (test_router.fetchdata("show version"))
+test_router.disconnect() 
 ```
