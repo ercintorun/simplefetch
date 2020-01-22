@@ -19,6 +19,7 @@ Script is based on paramiko and catches device-prompt to understand the output i
 * cisco-iosxr
 * cisco-nxos
 * junos
+* dell-os10
 
 For the above device type pagination commands (e.g. "terminal length 0") send automatically. 
 
