@@ -70,7 +70,6 @@ def send_command_and_get_response(channel, cmd, hostname):
 	if results[-1:] in ["<","["]: #if router is huawei before router name there might be a string  < or [  e.g. <nw_rt_...>
 		results = results[:-1]
 	return results
-self, host, port, user, passwd, os):
 
 class SSH:
 	""" Simple shell to run a command on the host """
