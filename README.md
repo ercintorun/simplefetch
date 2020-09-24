@@ -50,21 +50,24 @@ print (test_router.fetchdata("show version"))
 test_router.disconnect() 
 ```
 # Example with Multithreading Python3
-
+```
+# -*- coding: utf-8 -*-
 import simplefetch
 import logging, time
 from threading import Thread
 timestr = time.strftime("%Y%m%d-%H%M%S")
-log_filename="basarisiz_baglanti_loglari_"+str(timestr)+".txt"
+log_filename="connection_logs"+str(timestr)+".txt"
 
+#================== Logging
 logging.basicConfig(filename=log_filename, filemode='a', level=logging.INFO,
                     format='%(asctime)s [%(name)s] %(levelname)s (%(threadName)-10s): %(message)s')
-
-
+		    
+#==================USER, PASS, ROUTER_LIST==============
 username= "username"
 password="password"
 router_list=["router_name1","192.168.1.1"]
 
+#================== MEMORY check function for huawei devices
 def get_memory_usages(router_name):
 	try:
 		connection = simplefetch.SSH(user=username, passwd=password, network_os="huawei-vrp")
@@ -77,10 +80,11 @@ def get_memory_usages(router_name):
 			connection.disconnect()
 	except:
 		logging.warning ("connection unsuccessful to %s",router_name)
-
-
+		
+#================== multithread part 
 import concurrent.futures 
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor: 
 	for items in router_list:
 		executor.submit(get_memory_usages,items) 
 executor.shutdown(wait=True)
+```
