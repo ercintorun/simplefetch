@@ -118,7 +118,7 @@ class SSH:
 			resp=""
 			
 			try:
-				if self.os in ("cisco-ios" ,"cisco-nxos","cisco-iosxe","cisco-iosxr","zte-zxros","ericsson-ipos"):
+				if self.os in ("cisco-ios" ,"cisco-nxos","cisco-iosxe","cisco-iosxr","zte-zxros","ericsson-ipos", "dell-os10"):
 					send_command_and_get_response(self.chan,ios_any_cli_length, self.prompt)
 				elif self.os=="huawei-vrp":
 					send_command_and_get_response(self.chan,vrp_cli_length, self.prompt)
