@@ -9,6 +9,9 @@ Simplified Paramiko Library to Fetch Data From MultiVendor Network Devices
 * Cisco IOS-XR
 * Juniper Junos
 * Huawei VRP5/8
+* ZTE ZXROS 
+* DELL OS10
+* Ericsson IPOS
 
 Script is based on paramiko and catches device-prompt to understand the output is fetched, thus there is a strong possibility that script could work with many network devices from different vendors, i  only do not have the chance to test.
 
