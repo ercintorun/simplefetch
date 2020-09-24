@@ -19,6 +19,7 @@ junos_cli_length = "set cli screen-length 0"
 nokia_sr_os_cli_length ="environment no more"
 cli_prompt = ("#", ">")
 MAX_BUFFER = 65535
+initial_wait_time = 2 
 #==================================
 def get_command_results(channel, hostname):
 	## http://joelinoff.com/blog/?p=905
@@ -65,6 +66,7 @@ def send_command_and_get_response(channel, cmd, hostname):
 		channel.send(cmd+"\n")
 	else:
 		channel.send(cmd)
+	results = get_command_results(channel, hostname)
 	try:
 		results = results.split(hostname)[-0] # at the end of the output, an empty line with router name comes, remove it 
 		results = results.split(cmd)[-1] #router returns the first command that is send, so split and do not display the command that is sent
@@ -92,7 +94,8 @@ class SSH:
 			"""Invoking Shell and Pagination"""
 			
 			try: 
-				self.chan = self.ssh.invoke_shell(width=255,width_pixels=0, height_pixels=0)		
+				self.chan = self.ssh.invoke_shell(width=255,width_pixels=0, height_pixels=0)
+				time.sleep(initial_wait_time)
 				resp=self.chan.recv(MAX_BUFFER)
 				if python3_usage:
 					resp=resp.decode()
