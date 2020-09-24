@@ -6,7 +6,7 @@ if sys.version_info[0] < 3:
     python3_usage=False
 
 """
-#v2.0 2020.01.20
+#v5.1 2020.09.24
 #Written by Ercin TORUN
 #automates ssh login using paramiko library
 
@@ -16,6 +16,7 @@ line_break = "\r"
 ios_any_cli_length = "terminal length 0"
 vrp_cli_length = "screen-length 0 temporary"
 junos_cli_length = "set cli screen-length 0"
+nokia_sr_os_cli_length ="environment no more"
 cli_prompt = ("#", ">")
 MAX_BUFFER = 65535
 #==================================
@@ -64,13 +65,16 @@ def send_command_and_get_response(channel, cmd, hostname):
 		channel.send(cmd+"\n")
 	else:
 		channel.send(cmd)
-	results = get_command_results(channel, hostname)
-	results = results.split(hostname)[-0] # at the end of the output, an empty line with router name comes, remove it 
-	results = results.split(cmd)[-1] #router returns the first command that is send, so split and do not display the command that is sent
-	if results[-1:] in ["<","["]: #if router is huawei before router name there might be a string  < or [  e.g. <nw_rt_...>
-		results = results[:-1]
-	return results
-
+	try:
+		results = results.split(hostname)[-0] # at the end of the output, an empty line with router name comes, remove it 
+		results = results.split(cmd)[-1] #router returns the first command that is send, so split and do not display the command that is sent
+		if results[-1:] in ["<","["]: #if router is huawei before router name there might be a string  < or [  e.g. <nw_rt_...>
+			results = results[:-1]
+		return results
+	except:
+		logging.warning("something went wrong when trying to remove hostname from the output get with command %s" % cmd)
+		raise ValueError("something went wrong when trying to remove hostname from the output get with command %s" % cmd)
+		return		
 class SSH:
 	""" Simple shell to run a command on the host """
 	def __init__(self, host, port, user, passwd, network_os=None):
@@ -83,7 +87,7 @@ class SSH:
 			self.ssh = paramiko.SSHClient()
 			self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 			logging.info("Connecting to host "+self.host)
-			self.ssh.connect(self.host, username=user, password=passwd, port=self.port, allow_agent=False, look_for_keys=False, timeout=10)
+			self.ssh.connect(self.host, username=user, password=passwd, port=self.port, allow_agent=False, look_for_keys=False, timeout=20)
 			logging.info("Connected to host "+self.host)
 			"""Invoking Shell and Pagination"""
 			
@@ -100,23 +104,35 @@ class SSH:
 				logging.warning("could not invoke a shell to %s" % self.host)
 				raise ValueError("could not invoke a shell to %s" % self.host)
 				return
-			self.prompt= re.sub('[><#]', '', resp.split()[-1])  #get device hostname
-			logging.info("the router name connected is %s" % self.prompt)
-			logging.info("Invoked a shell to %s , now sending pagination commands" % self.host)
+			
+			try:
+				self.prompt= re.sub('[><#]', '', resp.split()[-1])
+				logging.info("the router name connected is %s" % self.prompt)
+				logging.info("Invoked a shell to %s , sending pagination commands" % self.host)
+			except:
+				logging.warning("could not get cli host-name of device %s" % self.host)
+				raise ValueError("could not get cli host-name of device %s" % self.host)
+				return 
 			
 			buff="" 
 			resp=""
 			
-			if self.os in ("cisco-ios" ,"cisco-nxos","cisco-iosxe","cisco-iosxr", "dell-os10"):
-				send_command_and_get_response(self.chan,ios_any_cli_length, self.prompt)
-			elif self.os=="huawei-vrp":
-				send_command_and_get_response(self.chan,vrp_cli_length, self.prompt)
-			elif self.os=="junos":
-				send_command_and_get_response(self.chan,junos_cli_length, self.prompt)
-			else:
-				logging.info("device software type '%s' is unkown, no pagination command is send to device" % os)
-				raise ValueError("device software type '%s' is unkown, no pagination command is send to device" % os)
-				return			
+			try:
+				if self.os in ("cisco-ios" ,"cisco-nxos","cisco-iosxe","cisco-iosxr","zte-zxros","ericsson-ipos"):
+					send_command_and_get_response(self.chan,ios_any_cli_length, self.prompt)
+				elif self.os=="huawei-vrp":
+					send_command_and_get_response(self.chan,vrp_cli_length, self.prompt)
+				elif self.os=="junos":
+					send_command_and_get_response(self.chan,junos_cli_length, self.prompt)
+				elif self.os =="nokia-sros" :
+					send_command_and_get_response(self.chan,nokia_sr_os_cli_length, self.prompt)
+				else:
+					logging.info("device software type is unkown, no pagination command is send to device")
+					raise ValueError("device software type '%s' is unkown, no pagination command is send to device" % os)
+			except: 
+				logging.warning("something went wrong when sending pagination command to %s" % self.host)
+				raise ValueError("something went wrong when sending pagination command to %s" % self.host)
+				return 	
 	
 			time.sleep(1)
 			self.connectionsuccess = True			
@@ -134,6 +150,9 @@ class SSH:
 			raise ValueError("Connection refused on %s" %self.host)
 			return	
 
+	def promptname (self):
+		return self.prompt
+
 	def fetchdata(self, cmd):
 		if self.connectionsuccess:
 			logging.info("running "+ str(cmd)+" on host "+self.host)
@@ -147,7 +166,7 @@ class SSH:
 		else:
 			logging.warning("No connection has been established to %s therefore command could not be executed" % self.host)
 			return
-			
+
 	def disconnect (self):
 		if self.connectionsuccess:	
 			self.ssh.close()
