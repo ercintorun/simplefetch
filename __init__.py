@@ -5,12 +5,6 @@ python3_usage=True
 if sys.version_info[0] < 3:
     python3_usage=False
 
-"""
-#v5.2 2020.11.09
-#Written by Ercin TORUN
-#automates ssh login using paramiko library
-
-"""
 #==================some variables
 line_break = "\r"
 ios_any_cli_length = "terminal length 0"
