@@ -6,7 +6,7 @@ if sys.version_info[0] < 3:
     python3_usage=False
 
 """
-#v5.1 2020.09.24
+#v5.2 2020.11.09
 #Written by Ercin TORUN
 #automates ssh login using paramiko library
 
@@ -79,7 +79,7 @@ def send_command_and_get_response(channel, cmd, hostname):
 		return		
 class SSH:
 	""" Simple shell to run a command on the host """
-	def __init__(self, host, port, user, passwd, network_os=None):
+	def __init__(self, host, port, user, passwd, network_os="unknown"):
 		self.os=network_os
 		self.host = host
 		self.connectionsuccess = False
@@ -129,6 +129,9 @@ class SSH:
 					send_command_and_get_response(self.chan,junos_cli_length, self.prompt)
 				elif self.os =="nokia-sros" :
 					send_command_and_get_response(self.chan,nokia_sr_os_cli_length, self.prompt)
+				elif self.os =="unknown" :
+					send_command_and_get_response(self.chan," ", self.prompt)
+					logging.warning("device type is not selected, no pagination command has been sent. Outputs might be omitted because of scroolback buffer.")
 				else:
 					logging.info("device software type is unkown, no pagination command is send to device")
 					raise ValueError("device software type '%s' is unkown, no pagination command is send to device" % os)
