@@ -13,23 +13,21 @@ junos_cli_length = "set cli screen-length 0"
 nokia_sr_os_cli_length ="environment no more"
 cli_prompt = ("#", ">")
 initial_wait_time = 2 
+MAX_BUFFER = 65535
 #==================================
 def get_command_results(channel, hostname):
 	## http://joelinoff.com/blog/?p=905
 	maxseconds = 30
-	bufsize = 65500
 	# Poll until completion or timeout
 	# Note that we cannot directly use the stdout file descriptor
 	# because it stalls at 64K bytes (65536).
-	input_idx = 0
-	timeout_flag = False
 	start = datetime.datetime.now()
 	start_secs = time.mktime(start.timetuple())
 	output = ''
 	channel.setblocking(0)
 	while not channel.exit_status_ready():
 		if channel.recv_ready():
-			data = channel.recv(bufsize).decode('ascii')
+			data = channel.recv(MAX_BUFFER).decode('ascii')
 			output += data
 		if channel.exit_status_ready():
 			break
@@ -38,7 +36,6 @@ def get_command_results(channel, hostname):
 		now_secs = time.mktime(now.timetuple())
 		et_secs = now_secs - start_secs
 		if et_secs > maxseconds:
-			timeout_flag = True
 			break
 		rbuffer = output.rstrip(' ')
 		if rbuffer.endswith(hostname+">") or rbuffer.endswith(hostname+"#") or rbuffer.endswith(hostname):
