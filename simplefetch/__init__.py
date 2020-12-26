@@ -12,15 +12,12 @@ vrp_cli_length = "screen-length 0 temporary"
 junos_cli_length = "set cli screen-length 0"
 nokia_sr_os_cli_length ="environment no more"
 cli_prompt = ("#", ">")
-MAX_BUFFER = 65535
 initial_wait_time = 2 
 #==================================
 def get_command_results(channel, hostname):
 	## http://joelinoff.com/blog/?p=905
-	interval = 0.1
 	maxseconds = 30
-	maxcount = maxseconds / interval
-	bufsize = 9192
+	bufsize = 65500
 	# Poll until completion or timeout
 	# Note that we cannot directly use the stdout file descriptor
 	# because it stalls at 64K bytes (65536).
@@ -30,7 +27,7 @@ def get_command_results(channel, hostname):
 	start_secs = time.mktime(start.timetuple())
 	output = ''
 	channel.setblocking(0)
-	while True:
+	while not channel.exit_status_ready():
 		if channel.recv_ready():
 			data = channel.recv(bufsize).decode('ascii')
 			output += data
@@ -43,16 +40,10 @@ def get_command_results(channel, hostname):
 		if et_secs > maxseconds:
 			timeout_flag = True
 			break
- 
 		rbuffer = output.rstrip(' ')
-		if len(rbuffer) > 0 and hostname in rbuffer: ## got a Cisco command prompt
-			time.sleep(0.5) #sometimes router returns hostname 2 times with an empty line, wait for a short time, example at bottom
+		if rbuffer.endswith(hostname+">") or rbuffer.endswith(hostname+"#") or rbuffer.endswith(hostname):
 			break
-		time.sleep(0.200)
-	if channel.recv_ready():
-		data = channel.recv(bufsize)
-		output += data.decode('ascii')
-
+		time.sleep(0.100)
 	return output
  
 def send_command_and_get_response(channel, cmd, hostname):
