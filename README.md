@@ -12,6 +12,7 @@ Simplified Paramiko Library to Fetch Data From MultiVendor Network Devices
 * ZTE ZXROS 
 * DELL OS10
 * Ericsson IPOS
+* Nokia SROS
 
 Script is based on paramiko and catches device-prompt to understand the output is fetched, thus there is a strong possibility that script could work with many network devices from different vendors, i  only do not have the chance to test.
 
